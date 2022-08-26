@@ -1,0 +1,21 @@
+{"Records": 
+  [{"eventVersion": "2.1", 
+    "eventSource": "aws:s3", 
+    "awsRegion": "us-east-1", 
+    "eventTime": "2022-08-26T18:11:07.902Z", 
+    "eventName": "ObjectCreated:Put", 
+    "userIdentity": {
+      "principalId": "AWS:yyyyyyyyyyy:Rajesh.Dash@xyz.com"}, 
+      "requestParameters": 
+      {"sourceIPAddress": "127.0.0.173"}, 
+      "responseElements": 
+      {"x-amz-request-id": "xyz", 
+        "x-amz-id-2": 
+        "9j6dGaS4YdN4HSpMUerrrrrrtttttttttttttttttttttttttja"},
+         "s3": {"s3SchemaVersion": "1.0",
+           "configurationId": "jsonfile", "bucket": {"name": "lambda-json-file-test",
+             "ownerIdentity": {"principalId": "A1SZXX24JPNI4O"}, 
+             "arn": "arn:aws:s3:::test"}, "object": {"key": "json/sample_blogs1.json",
+               "size": 595, "eTag": "ff5b495d359c6c4d895efeae3cc02179", "sequencer": "0063090CBBD06C42F0"}}}]}
+
+

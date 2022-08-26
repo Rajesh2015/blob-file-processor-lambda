@@ -1,0 +1,35 @@
+{
+ "events":[
+    {
+	"eventType": "someevent", 
+	"number" : 1,
+	"startTime" : 1659343873429, 
+	"endTime" : 1659343874329, 
+	"duration" : 900, 
+	"inspiratoryTime" : 424,
+	"Rate" : 50, 
+	"maskLeakage" : 38
+},
+    {
+	"eventType": "someevent2", 
+	"number" : 2,
+	"startTime" : 1659343874641, 
+	"endTime" : 1659343875300, 
+	"duration" : 659, 
+	"inspiratoryTime" : 424,
+	"Rate" : 50, 
+	"maskLeakage" : 48
+},
+{
+	"eventType": "someevent3", 
+	"number" : 2,
+	"startTime" : 1659343875301, 
+	"endTime" : 1659343876535, 
+	"duration" : 659, 
+	"inspiratoryTime" : 424,
+	"Rate" : 50, 
+	"maskLeakage" : 58
+}
+
+]
+}
