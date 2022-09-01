@@ -10,10 +10,10 @@ The application uses several AWS resources, including Lambda functions and an AP
 
 This is demo to showcase blob file processing by using lambda function.
 ## package
-sam package  --s3-bucket bucketname
+```sam package  --s3-bucket bucketname```
 ## Test In local:
-sam build
-sam local invoke -e events/event.json
+```sam build```
+```sam local invoke -e events/event.json```
 
 ## Tests
 
