@@ -27,15 +27,6 @@ file_upload$ python -m pytest tests/unit -v
 # Create the env variable AWS_SAM_STACK_NAME with the name of the stack we are testing
 file_upload$ AWS_SAM_STACK_NAME=<stack-name> python -m pytest tests/integration -v
 ```
-
-## Cleanup
-
-To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
-
-```bash
-aws cloudformation delete-stack --stack-name file_upload
-```
-
 ## Resources
 
 See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
