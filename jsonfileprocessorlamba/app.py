@@ -7,14 +7,21 @@ session = boto3.Session()
 firehose_client = session.client("firehose")
 
 def lambda_handler(event, context):
+    print(event)
     bucket_name_from_event = event['Records'][0]['s3']['bucket']['name']
     file_key = event['Records'][0]['s3']['object']['key']
+    print(bucket_name_from_event)
+    print(file_key)
     obj = s3.Object(bucket_name_from_event, file_key)
-    data = json.load(obj.get()['Body']) 
+    file_content = obj.get()['Body'].read().decode('utf-8')
+    print(file_content)
+    json_content = json.loads(file_content)
+    print(json_content)
+    print(json_content['events'])
 
     list=[]
 
-    for item in data['events']:
+    for item in json_content['events']:
         if(int(item['maskLeakage'])>40):
             time=datetime.fromtimestamp(int(item['startTime'])/1000)
             starttime = time.strftime("%m-%d-%Y, %H:%M:%S.%f")
@@ -23,7 +30,8 @@ def lambda_handler(event, context):
             item['startTime']= starttime
             item['endTime']= endtime
             list.append(item)
-    return sendMessagesToFirehose("Test_jsonProcess",data['events'])
+    print(list)        
+    return sendMessagesToFirehose("demo-json-blob-ingestion-firehose",list)
 
 
 def sendMessagesToFirehose(stream_name, stores):
@@ -42,8 +50,8 @@ def sendMessagesToFirehose(stream_name, stores):
                 Records=records
             )
             return response
-            print(records)
     except Exception as e:
-        return e
+        print(e.__cause__)
+        raise e
 
 

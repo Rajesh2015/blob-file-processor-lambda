@@ -1,0 +1,8 @@
+
+.aws-sam
+.terraform
+
+*.hcl
+terraform/lambda_package.zip
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
