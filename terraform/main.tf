@@ -176,7 +176,7 @@ resource "aws_lambda_function" "blob-parser-lambda" {
 
 
 resource "aws_lambda_function" "blob-parser-lambda-batch" {
-  function_name    = "demo-blob-parser-lambda"
+  function_name    = "demo-blob-parser-lambda-batch"
   role             = "${aws_iam_role.demo-json-blob-lambda-role.arn}"
   handler          = "lambda_batch.lambda_handler"
   runtime          = "python3.9"
