@@ -114,7 +114,6 @@ resource "aws_iam_role_policy_attachment" "demo-json-parsing-firehose-policy" {
 
 
 # # Create the Lambda function
-
 data "aws_iam_policy_document" "lambda_assume_role" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -164,8 +163,6 @@ resource "aws_iam_role_policy_attachment" "analytics-prodtest-blob-parse-lambda-
 }
 
 
-
-
 resource "aws_lambda_function" "blob-parser-lambda" {
   function_name    = "demo-blob-parser-lambda"
   role             = "${aws_iam_role.demo-json-blob-lambda-role.arn}"
@@ -176,6 +173,19 @@ resource "aws_lambda_function" "blob-parser-lambda" {
   source_code_hash = filebase64sha256(data.archive_file.lambda_package.output_path)
   
 }
+
+
+resource "aws_lambda_function" "blob-parser-lambda-batch" {
+  function_name    = "demo-blob-parser-lambda"
+  role             = "${aws_iam_role.demo-json-blob-lambda-role.arn}"
+  handler          = "lambda_batch.lambda_handler"
+  runtime          = "python3.9"
+  timeout          = 180
+  filename         = data.archive_file.lambda_package.output_path
+  source_code_hash = filebase64sha256(data.archive_file.lambda_package.output_path)
+  
+}
+
 resource "aws_lambda_permission" "json-uploaded-trigger-permission" {
   statement_id  = "AllowExecutionFromS3Bucket"
   action        = "lambda:InvokeFunction"
@@ -183,6 +193,7 @@ resource "aws_lambda_permission" "json-uploaded-trigger-permission" {
   principal     = "s3.amazonaws.com"
   source_arn    = "arn:aws:s3:::json-blob-demo-bucket"
 }
+
 resource "aws_s3_bucket_notification" "json-uploaded-notification" {
   bucket = "json-blob-demo-bucket"
   lambda_function {
