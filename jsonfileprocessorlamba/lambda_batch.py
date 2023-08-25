@@ -1,5 +1,6 @@
 import json
 import boto3
+import time
 from datetime import datetime
 
 firehose_client = boto3.client("firehose")
@@ -30,6 +31,30 @@ def process_record(record):
         print(e)
         return []
 
+def send_messages_to_firehose_with_backoff(stream_name, records):
+    max_retries = 5
+    base_delay = 0.1  # Initial delay in seconds, adjust as needed
+    retries = 0
+    
+    while retries < max_retries:
+        try:
+            response = firehose_client.put_record_batch(
+                DeliveryStreamName=stream_name,
+                Records=[
+                    {"Data": json.dumps(record) + "\n"} for record in records
+                ]
+            )
+            return response
+        except Exception as e:
+            print(e)
+            retries += 1
+            delay = base_delay * (2 ** retries)  # Exponential backoff formula
+            print(f"Retrying in {delay} seconds...")
+            time.sleep(delay)
+    
+    print(f"Max retries reached. Failed to send messages to {stream_name}")
+    return None
+
 def lambda_handler(event, context):
     try:
         output_messages = []
@@ -54,6 +79,10 @@ def lambda_handler(event, context):
                 }
             ]
         }
+        
+        if output_messages:
+            response = send_messages_to_firehose_with_backoff("demo-json-blob-ingestion-firehose", output_messages)
+            print(response)
         
         return result
     except Exception as e:
