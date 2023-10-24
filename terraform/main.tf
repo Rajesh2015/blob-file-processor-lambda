@@ -13,7 +13,7 @@ resource "aws_s3_bucket" "json-blob-demo-bucket" {
 
 data "archive_file" "lambda_package" {
   type        = "zip"
-  source_dir  = ".aws-sam/build/jsonprocessorfunction"
+  source_dir  = "../.aws-sam/build/jsonprocessorfunction"
   output_path = "lambda_package.zip"
 
 }
@@ -176,11 +176,11 @@ resource "aws_lambda_function" "blob-parser-lambda" {
 
 
 resource "aws_lambda_function" "blob-parser-lambda-batch" {
-  function_name    = "demo-blob-parser-lambda-batch"
+  function_name    = "demo-blob-parser-lambda-batchs"
   role             = "${aws_iam_role.demo-json-blob-lambda-role.arn}"
-  handler          = "lambda_batch.lambda_handler"
+  handler          = "appbatch.lambda_handler"
   runtime          = "python3.9"
-  timeout          = 180
+  timeout          = 300
   filename         = data.archive_file.lambda_package.output_path
   source_code_hash = filebase64sha256(data.archive_file.lambda_package.output_path)
   
