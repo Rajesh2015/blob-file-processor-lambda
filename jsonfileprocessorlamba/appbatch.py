@@ -5,14 +5,10 @@ from datetime import datetime
 
 firehose_client = boto3.client("firehose")
 
-def process_record(record):
+def process_record(bucket_name,file_key):
     try:
-        bucket_name = record['s3']['bucket']['name']
-        file_key = record['s3']['object']['key']
-
-        s3 = boto3.resource('s3')
-        obj = s3.Object(bucket_name, file_key)
-        file_content = obj.get()['Body'].read().decode('utf-8')
+        objWithKey = get_object_with_key(bucket_name,file_key)
+        file_content = objWithKey['obj']['Body'].read().decode('utf-8')
         json_content = json.loads(file_content)
 
         result_list = []
@@ -57,34 +53,48 @@ def send_messages_to_firehose_with_backoff(stream_name, records):
 
 def lambda_handler(event, context):
     try:
-        output_messages = []
-
-        for record in event['invocation']['inputMessages']:
-            payload = json.loads(record['body'])
-            result_list = process_record(payload)
-            if result_list:
-                output_messages.extend(result_list)
+        print("---- Debug Print ----")
+        print(event)
+        task_id = event["tasks"][0]["taskId"]
+        s3_bucket_arn = event['tasks'][0]['s3BucketArn']
+        bucketName = s3_bucket_arn.split(':::')[-1]
+        key = event['tasks'][0]['s3Key']
+        print(f"Calling json parser with bucket: {bucketName} and key: {key}")
         
-        result_string = json.dumps([msg["name"] for msg in output_messages])
-        
-        result = {
-            "invocationSchemaVersion": "1.0",
+        results = []
+        result_code = "Succeeded"
+        result_string = ''        
+        if bucketName:
+           resultList=run_throttled(bucketName, key)
+           response = send_messages_to_firehose_with_backoff("demo-json-blob-ingestion-firehose", resultList)
+           print(response)
+        else:
+            raise Exception(f'Bucket name not found in task: {json.dumps("task1")}')
+    finally:
+        results.append(
+            {
+                "taskId": task_id,
+                "resultCode": result_code,
+                "resultString": result_string,
+            }
+        )    
+    return {
+            "invocationSchemaVersion": event['invocationSchemaVersion'],
             "treatMissingKeysAs": "PermanentFailure",
-            "invocationId": event['invocationId'],
-            "results": [
-                {
-                    "taskId": "task1",
-                    "resultCode": "Succeeded",
-                    "resultString": result_string
-                }
-            ]
+            'invocationId': event['invocationId'],
+            "results": results,
         }
-        
-        if output_messages:
-            response = send_messages_to_firehose_with_backoff("demo-json-blob-ingestion-firehose", output_messages)
-            print(response)
-        
-        return result
-    except Exception as e:
-        print(e)
-        raise e
+
+    
+def get_object_with_key(bucket, key):
+    s3 = boto3.client('s3')
+    try:
+        obj = s3.get_object(Bucket=bucket, Key=key)
+        return {'obj': obj, 'key': key}
+    except Exception as err:
+        print("key not found", key)
+        raise err
+
+def run_throttled(bucketName, key):
+    time.sleep(1)
+    return process_record(bucketName, key)    

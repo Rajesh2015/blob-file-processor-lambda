@@ -6,3 +6,5 @@
 terraform/lambda_package.zip
 terraform/terraform.tfstate
 terraform/terraform.tfstate.backup
+.DS_Store
+.vscode/settings.json
