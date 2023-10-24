@@ -25,7 +25,7 @@ def process_record(bucket_name,file_key):
 
     except Exception as e:
         print(e)
-        return []
+        raise e
 
 def send_messages_to_firehose_with_backoff(stream_name, records):
     max_retries = 5
@@ -70,6 +70,10 @@ def lambda_handler(event, context):
            print(response)
         else:
             raise Exception(f'Bucket name not found in task: {json.dumps("task1")}')
+    except Exception as e:
+        result_code = "PermanentFailure"
+        result_string = str(e)       
+        print(e)
     finally:
         results.append(
             {
