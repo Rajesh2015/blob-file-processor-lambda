@@ -165,25 +165,25 @@ resource "aws_iam_role_policy_attachment" "analytics-prodtest-blob-parse-lambda-
 
 resource "aws_lambda_function" "blob-parser-lambda" {
   function_name    = "demo-blob-parser-lambda"
-  role             = "${aws_iam_role.demo-json-blob-lambda-role.arn}"
+  role             = aws_iam_role.demo-json-blob-lambda-role.arn
   handler          = "app.lambda_handler"
   runtime          = "python3.9"
   timeout          = 180
   filename         = data.archive_file.lambda_package.output_path
   source_code_hash = filebase64sha256(data.archive_file.lambda_package.output_path)
-  
+
 }
 
 
 resource "aws_lambda_function" "blob-parser-lambda-batch" {
   function_name    = "demo-blob-parser-lambda-batchs"
-  role             = "${aws_iam_role.demo-json-blob-lambda-role.arn}"
+  role             = aws_iam_role.demo-json-blob-lambda-role.arn
   handler          = "appbatch.lambda_handler"
   runtime          = "python3.9"
   timeout          = 300
   filename         = data.archive_file.lambda_package.output_path
   source_code_hash = filebase64sha256(data.archive_file.lambda_package.output_path)
-  
+
 }
 
 resource "aws_lambda_permission" "json-uploaded-trigger-permission" {
@@ -247,15 +247,15 @@ resource "aws_glue_catalog_table" "demo-json-blob-file-table" {
       name = "duration"
       type = "bigint"
     }
-      columns {
+    columns {
       name = "inspiratoryTime"
       type = "bigint"
     }
-      columns {
+    columns {
       name = "Rate"
       type = "bigint"
     }
-      columns {
+    columns {
       name = "maskLeakage"
       type = "int"
     }
